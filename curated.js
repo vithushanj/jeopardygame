@@ -494,14 +494,14 @@ window.CURATED = {
           ["Idina Menzel sings this 2013 power ballad as her character finally stops hiding her magic.", "What is \"Let It Go\"?"],
           ["Sebastian the crab sings this calypso song to keep a mermaid from leaving the ocean.", "What is \"Under the Sea\"?"],
           ["Elton John wrote and performed this \"Lion King\" love song that won an Oscar and a Grammy.", "What is \"Can You Feel the Love Tonight\"?"],
-          ["In this 2016 movie, a teenage girl sails across the ocean to return a stolen heart to an island goddess.", "What is Moana?"],
-          ["Randy Newman wrote and sings this song over the opening of \"Toy Story.\"", "What is \"You've Got a Friend in Me\"?"],] },
+          ["Randy Newman wrote and sings this song over the opening of \"Toy Story.\"", "What is \"You've Got a Friend in Me\"?"],
+          ["Phil Collins won an Oscar for this song from \"Tarzan,\" sung to a baby.", "What is \"You'll Be in My Heart\"?"],] },
         { t: "Rhyme Time", c: [
           ["Dried strips of thanksgiving meat.", "What is turkey jerky?"],
-          ["A cooking pot that is very warm.", "What is a hot pot?"],
           ["An angry parent", "What is a mad dad?"],
-          ["A joyful red Thanksgiving berry.", "What is a merry cranberry?"],
-          ["A turkey that can't keep its balance.", "What is a gobbler wobbler?"],] },
+          ["A communal dining style common in China.", "What is a hot pot?"],
+          ["A joyful red Thanksgiving fruit.", "What is a merry cranberry?"],
+          ["A drink raised to thank the person who threw the dinner.", "What is a host toast?"],] },
         { t: "Indian Festivals", c: [
           ["People light diyas and set off fireworks on this festival of lights.", "What is Diwali?"],
           ["On this spring festival, people throw colored powder and water at each other.", "What is Holi?"],
@@ -539,7 +539,7 @@ window.CURATED = {
           ["Jamie Lee Curtis and Rob Reiner guest-star as the divorced parents of this show's heroine, who tries to reunite them over Thanksgiving.", "What is New Girl?"],
           ["The main character of this show misses a wild night out to cook his first Thanksgiving dinner: a \"turturkeykey,\" a turkey stuffed with a smaller turkey.", "What is How I Met Your Mother?"],
           ["In this show, a mother and daughter try to eat four Thanksgiving dinners in one day, including a deep-fried turkey.", "What is Gilmore Girls?"],
-          ["On this sitcom about a community college study group, the gang hides in a garage to escape a friend's family Thanksgiving, in a parody of \"The Shawshank Redemption.\"", "What is Community?"],] },
+          ["Angela Bassett plays the mother in this show's Emmy-winning \"Thanksgiving\" episode, which follows a woman coming out to her family over years of holiday dinners.", "What is Master of None?"],] },
         { t: "Easy as \"PIE\"", c: [
           ["A long wooden walkway that goes out over the sea.", "What is a pier?"],
           ["This black-and-white bird is said to steal shiny things.", "What is a magpie?"],
@@ -547,6 +547,6 @@ window.CURATED = {
           ["This Irish actor played James Bond in \"Goldeneye.\"", "Who is Pierce Brosnan?"],
           ["This small city on the Missouri River is the capital of South Dakota.", "What is Pierre?"],] },
       ],
-    ], final: { t: "Thanksgiving Inventions", clue: "In 1955 Dorcas Reilly invented green bean casserole in this company's test kitchen; her original recipe card is now in the National Inventors Hall of Fame.", answer: "What is Campbell's (Campbell Soup Company)?" } },
+    ], final: { t: "World Travelers", clue: "Native to the Americas, this ingredient reached India with Portuguese traders in the 1500s. Today India is one of its top producers, and farmers there smear it on fences to keep elephants away.", answer: "What is the chili pepper?" } },
   ],
 };
