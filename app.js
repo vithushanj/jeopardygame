@@ -150,12 +150,13 @@ function genBoard(id, name) {
   return b;
 }
 
+const myCopy = p => boards.find(b => b.preset === p.name) || boards.find(b => !b.preset && b.name === p.name);
 function fromPreset(p) {
   const cat = x => {
     if (typeof x === 'string') return genCat(SRC.find(s => s.kind === 'cur' && s.title === x), 0, new Set());
     return { title: x.t, key: null, clues: x.c.map((q, j) => Object.assign({ clue: q[0], answer: q[1], diff: ROWD[j], id: 'p' + uid() }, q[2] ? { link: q[2] } : {})) };
   };
-  return { id: uid(), name: p.name, rounds: p.rounds.map(r => ({ cats: r.map(cat) })), final: { title: p.final.t, clue: p.final.clue, answer: p.final.answer } };
+  return { id: uid(), name: p.name, preset: p.name, rounds: p.rounds.map(r => ({ cats: r.map(cat) })), final: { title: p.final.t, clue: p.final.clue, answer: p.final.answer } };
 }
 
 // ---------- sound + motion ----------
@@ -267,7 +268,8 @@ function vHome() {
       <div class="row"><button class="primary big" data-a="newBoard">＋ New board</button><button data-a="importBoard">Import board</button><button data-a="goScreen" title="Turn this window into the screen your guests see">Guest screen</button></div></header>
     ${resume}<h2>Your boards</h2>${list}
     ${CUR.boards.length ? '<h2>Ready-made boards</h2>' + CUR.boards.map((p, n) => `<div class="card"><div class="row spread"><h3>${esc(p.name)}</h3>
-      <button class="primary small" data-a="usePreset" data-n="${n}">Add to my boards</button></div>
+      ${myCopy(p) ? `<div class="row"><span class="sub">You have a copy</span><button class="small" data-a="usePreset" data-n="${n}">Replace my copy with this version</button></div>`
+        : `<button class="primary small" data-a="usePreset" data-n="${n}">Add to my boards</button>`}</div>
       ${p.rounds.map((r, i) => `<div class="chips"><span class="chip"><b>${roundName(i)}</b></span>${r.map(x => `<span class="chip">${esc(typeof x === 'string' ? x : x.t)}</span>`).join('')}</div>`).join('')}
       <div class="chips"><span class="chip"><b>Final</b></span><span class="chip">${esc(p.final.t)}</span></div></div>`).join('') : ''}`;
 }
@@ -590,7 +592,13 @@ const A = {
   },
   openEditor(b) { edit = clone(b); hist = []; typing = false; tab = 0; sel = null; showFind = false; go('editor'); },
   newBoard() { const b = genBoard(); boards.unshift(b); saveBoards(); showOpts = false; A.openEditor(b); },
-  usePreset(d) { const b = fromPreset(CUR.boards[+d.n]); boards.unshift(b); saveBoards(); A.openEditor(b); },
+  usePreset(d) {
+    const p = CUR.boards[+d.n], old = myCopy(p), b = fromPreset(p);
+    if (!old) { boards.unshift(b); saveBoards(); A.openEditor(b); return; }
+    ask(`Replace your copy of "${old.name}" with the latest version? Any edits you made to your copy will be lost.`, () => {
+      b.id = old.id; boards[boards.indexOf(old)] = b; saveBoards(); A.openEditor(b);
+    }, { ok: 'Replace' });
+  },
   editBoard(d) { A.openEditor(boards.find(b => b.id === d.id)); },
   dupBoard(d) { const b = clone(boards.find(x => x.id === d.id)); b.id = uid(); b.name += ' (copy)'; boards.unshift(b); saveBoards(); render(); },
   delBoard(d) { const b = boards.find(x => x.id === d.id); ask(`Delete "${b.name}"?`, () => { boards = boards.filter(x => x !== b); saveBoards(); render(); }, { ok: 'Delete' }); },
