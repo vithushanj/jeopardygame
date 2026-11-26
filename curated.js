@@ -476,7 +476,7 @@ window.CURATED = {
           ["Every year, this New York store holds a big Thanksgiving parade with giant balloons.", "What is Macy's?"],
           ["The Pilgrims sailed to America in 1620 on this ship.", "What is the Mayflower?"],
           ["This small, sour red berry is cooked into a sauce for Thanksgiving. Farmers flood their fields with water to harvest it.", "What is the cranberry?"],
-          ["Abraham Lincoln made Thanksgiving a national holiday after a woman named Sarah Hale asked for years. She also wrote this children's rhyme about Mary and her pet.", "What is \"Mary Had a Little Lamb\"?"],
+          ["Abraham Lincoln made Thanksgiving a national holiday after a woman named Sarah Hale asked for years. Hale also wrote this children's rhyme about a woman and her pet mammal.", "What is \"Mary Had a Little Lamb\"?"],
           ["In 1939 this president moved Thanksgiving one week earlier so stores could have a longer shopping season.", "Who is Franklin D. Roosevelt (FDR)?"],] },
         { t: "Biryani", c: [
           ["The Charminar is in this city, famous for its dum biryani.", "What is Hyderabad?"],
@@ -485,11 +485,11 @@ window.CURATED = {
           ["This famous Secunderabad restaurant started in 1953 as a small café next to a cinema.", "What is Paradise?"],
           ["Kolkata-style biryani is known for having this vegetable in it.", "What is potato (aloo)?"],] },
         { t: "Famous from Champaign-Urbana", c: [
-          ["This rapper was born in Champaign. He plays Tej in the \"Fast & Furious\" movies.", "Who is Ludacris?"],
           ["Champaign-born actress Jean Yoon played the mother on this Canadian TV show about a Korean family that runs a small shop.", "What is Kim's Convenience?"],
+          ["As a small child, this future vice president lived in Champaign-Urbana. Her sister Maya was born there.", "Who is Kamala Harris?"],
+          ["This rapper was born in Champaign. He plays Tej in Fast & Furious (sadly not in 4 though).", "Who is Ludacris?"],
           ["This TV news host was born in Champaign in 1970. She worked at Fox News for many years.", "Who is Megyn Kelly?"],
-          ["Champaign-born author Amy Chua made this phrase famous. It means a very strict parent.", "What is a tiger mom (tiger parent)?"],
-          ["In the 1960s this future politician lived in Champaign-Urbana as a toddler, while her Jamaican-born father taught economics at the University of Illinois.", "Who is Kamala Harris?"],] },
+          ["Champaign-born author Amy Chua's 2011 memoir made famous this animal-based phrase about strict parenting.", "What is a tiger mom (tiger parent)?"],] },
         { t: "Disney Songs", c: [
           ["Idina Menzel sings this 2013 power ballad as her character finally stops hiding her magic.", "What is \"Let It Go\"?"],
           ["Sebastian the crab sings this calypso song to keep a mermaid from leaving the ocean.", "What is \"Under the Sea\"?"],
@@ -506,7 +506,7 @@ window.CURATED = {
           ["People light diyas and set off fireworks on this festival of lights.", "What is Diwali?"],
           ["On this spring festival, people throw colored powder and water at each other.", "What is Holi?"],
           ["During this nine-night festival, people in Gujarat dance garba and dandiya.", "What is Navratri?"],
-          ["In January, people fly kites for this harvest festival. In Tamil Nadu it is called Pongal.", "What is Sankranti?"],
+          ["In January, people in Tamil Nadu fly kites for this harvest festival. Andhra celebrates something similar called Sankranti.", "What is Pongal?"],
           ["On this Kerala festival, families eat a big meal on banana leaves and make flower designs.", "What is Onam?"],] },
       ],
       [
@@ -530,9 +530,9 @@ window.CURATED = {
           ["When a bowler takes three wickets with three balls in a row, it is called this.", "What is a hat-trick?"],] },
         { t: "Indian States", c: [
           ["Hyderabad is the capital of this state.", "What is Telangana?"],
-          ["The Taj Mahal is in this state.", "What is Uttar Pradesh?"],
           ["This small state is famous for its beaches. It was once ruled by Portugal.", "What is Goa?"],
-          ["This state is called \"God's Own Country.\" Its capital is Thiruvananthapuram.", "What is Kerala?"],
+          ["The Taj Mahal is in this state.", "What is Uttar Pradesh?"],
+          ["This state, called \"God's Own Country,\" is home to the most 5 star hotels of any state in India.", "What is Kerala?"],
           ["This northeast state is famous for its tea and its one-horned rhinos.", "What is Assam?"],] },
         { t: "Thanksgiving on TV", c: [
           ["To cheer up her boyfriend, a woman puts a whole raw turkey on her head and wears sunglasses in this sitcom's Thanksgiving episode.", "What is Friends?"],
