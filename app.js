@@ -206,11 +206,80 @@ function ask(msg, cb, o = {}) {
   const f = dlg.querySelector('#dlgIn') || dlg.querySelector('.primary');
   f.focus(); if (f.select) f.select();
 }
-function importText(text) {
+// ---------- images ----------
+// A clue's picture is either a web address (https://…, or a file path inside this site) or an image
+// uploaded from the host's computer. Uploads are shrunk and kept in this browser's IndexedDB (far
+// roomier than localStorage), and clues point at them as "idb:<key>". Exports embed them as data.
+const IMG_MAX = 1600;
+const imgCache = new Map();
+let imgDbP = null;
+function imgDb() {
+  if (!imgDbP) imgDbP = new Promise((res, rej) => {
+    const r = indexedDB.open('tb-images', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('imgs');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  return imgDbP;
+}
+async function imgPut(dataUrl) {
+  const key = 'i' + Date.now().toString(36) + uid();
+  const db = await imgDb();
+  await new Promise((res, rej) => { const t = db.transaction('imgs', 'readwrite'); t.objectStore('imgs').put(dataUrl, key); t.oncomplete = res; t.onerror = () => rej(t.error); });
+  imgCache.set(key, dataUrl);
+  return 'idb:' + key;
+}
+async function imgGet(key) {
+  if (imgCache.has(key)) return imgCache.get(key);
+  const db = await imgDb();
+  const v = await new Promise((res, rej) => { const r = db.transaction('imgs').objectStore('imgs').get(key); r.onsuccess = () => res(r.result || ''); r.onerror = () => rej(r.error); });
+  if (v) imgCache.set(key, v);
+  return v;
+}
+const imgOk = u => /^(https?:\/\/|idb:|data:image\/|images\/)/i.test(String(u || '').trim());
+function imgTag(u, cls) {
+  u = String(u || '').trim();
+  if (!imgOk(u)) return '';
+  if (u.startsWith('idb:')) { const k = u.slice(4); return `<img class="${cls}" alt="" data-idb="${esc(k)}"${imgCache.has(k) ? ` src="${esc(imgCache.get(k))}"` : ''}>`; }
+  return `<img class="${cls}" alt="" src="${esc(u)}">`;
+}
+function hydrateImgs() {
+  document.querySelectorAll('img[data-idb]:not([src])').forEach(el => {
+    imgGet(el.dataset.idb).then(v => { if (v) el.src = v; }).catch(() => {});
+  });
+}
+function shrinkImage(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, IMG_MAX / Math.max(im.width, im.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k);
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);   // flatten transparent maps onto white
+      ctx.drawImage(im, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      res(cv.toDataURL('image/jpeg', 0.86));
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('That file is not an image this browser can open.')); };
+    im.src = url;
+  });
+}
+const eachClue = (b, fn) => { b.rounds.forEach(r => r.cats.forEach(c => c.clues.forEach(cl => { if (cl) fn(cl); }))); if (b.final) fn(b.final); };
+async function boardForExport(b) {
+  const out = clone(b), jobs = [];
+  eachClue(out, cl => { if (String(cl.img || '').startsWith('idb:')) jobs.push(imgGet(cl.img.slice(4)).then(v => { cl.img = v || ''; })); });
+  await Promise.all(jobs);
+  return out;
+}
+let exportText = '', exportName = 'board.json';
+async function importText(text) {
   try {
     const b = JSON.parse(text);
     if (!Array.isArray(b.rounds) || !b.rounds.every(r => Array.isArray(r.cats))) throw new Error('not a board file');
     b.id = uid(); b.name = b.name || 'Imported board'; b.final = b.final || { title: '', clue: '', answer: '' };
+    const jobs = [];
+    eachClue(b, cl => { if (String(cl.img || '').startsWith('data:image/')) jobs.push(imgPut(cl.img).then(ref => { cl.img = ref; })); });
+    await Promise.all(jobs);
     boards.unshift(b); saveBoards(); render();
   } catch (err) { ask('Could not import that board: ' + err.message); }
 }
@@ -235,6 +304,7 @@ function render() {
   fx.deal = fx.pop = false; fx.bump = -1;
   if (fx.confetti) { fx.confetti = false; confetti(); }
   placeClip();
+  hydrateImgs();
 }
 function saveEdit() {
   const i = boards.findIndex(b => b.id === edit.id);
@@ -299,6 +369,9 @@ function clueCard(cat, ci, i, r) {
       <textarea rows="4" data-i="sClue" placeholder="Clue">${esc(cl ? cl.clue : '')}</textarea>
       <input data-i="sAnswer" placeholder="Correct response" value="${esc(cl ? cl.answer : '')}">
       <input data-i="sLink" placeholder="Clip link, optional (YouTube or any https:// URL)" value="${esc(cl && cl.link ? cl.link : '')}">
+      <div class="picrow">${cl && imgOk(cl.img) ? imgTag(cl.img, 'thumb') : ''}
+        <input data-i="sImg" placeholder="Picture: paste an image address…" value="${esc(cl && cl.img && !String(cl.img).startsWith('idb:') ? cl.img : '')}">
+        <button class="small" data-a="imgUpload">Upload picture</button>${cl && cl.img ? '<button class="small warn" data-a="imgClear" title="Remove picture">✕</button>' : ''}</div>
       <div class="row tools">
         <button class="small" data-a="clueSwap" ${canSwap ? '' : 'disabled'} title="${canSwap ? 'Swap for a different clue from this category' : 'Hand-written set: swap the whole category, or use Find a clue'}">↻ Swap</button>
         <button class="small" data-a="clueMove" data-d="-1" ${i === 0 ? 'disabled' : ''} title="Move up (easier slot)">↑</button>
@@ -307,7 +380,7 @@ function clueCard(cat, ci, i, r) {
   }
   return `<div class="clue-card ${cl ? '' : 'empty'}" draggable="${cl ? 'true' : 'false'}" data-a="slot" data-c="${ci}" data-i="${i}" tabindex="0">
     <div class="row spread"><span class="v">${val}</span>${cl ? `<span class="tag d${cl.diff}">${DIFF[cl.diff]}</span>` : ''}</div>
-    ${cl ? `<div class="q">${esc(cl.clue)}</div><div class="a">${esc(cl.answer)}</div>${safeLink(cl.link) ? '<div class="a">▶ has a clip</div>' : ''}` : '<div class="q">Empty — click to write or fill</div>'}</div>`;
+    ${cl ? `<div class="q">${esc(cl.clue)}</div><div class="a">${esc(cl.answer)}</div>${safeLink(cl.link) ? '<div class="a">▶ has a clip</div>' : ''}${imgOk(cl.img) ? imgTag(cl.img, 'thumb') : ''}` : '<div class="q">Empty — click to write or fill</div>'}</div>`;
 }
 function vEditor() {
   const b = edit;
@@ -440,7 +513,7 @@ function vClue() {
     if (o.wild && o.stage === 'wager') return `<div class="overlay wildbg ${pop}"><div class="meta">${esc(cat.title)}</div><div class="wild">★ Wildcard ★</div>
       <p class="center note">${o.team == null ? 'Which team picked it?' : esc(game.teams[o.team].name) + ', how much will you risk?'}</p></div>`;
     return `<div class="overlay ${pop}"><div class="meta">${esc(cat.title)} · <b>${o.wild ? 'Wildcard ' : ''}${val.toLocaleString()}</b></div>
-      <div class="clue">${esc(cl.clue)}</div>${clipWanted() ? '<div class="clipspace"></div>' : ''}<div class="answer">${o.show ? `<span class="shown">${esc(cl.answer)}</span>` : ''}</div>${scoreBar()}</div>`;
+      ${imgTag(cl.img, 'clueimg')}<div class="clue">${esc(cl.clue)}</div>${clipWanted() ? '<div class="clipspace"></div>' : ''}<div class="answer">${o.show ? `<span class="shown">${esc(cl.answer)}</span>` : ''}</div>${scoreBar()}</div>`;
   }
   if (o.wild && o.stage === 'wager') {
     const max = o.team == null ? 0 : Math.max(game.teams[o.team].score, BASE[4] * (r + 1));
@@ -460,7 +533,7 @@ function vClue() {
   }).join('');
   return `<div class="overlay ${pop}"><div class="row spread"><div class="meta">${esc(cat.title)} · <b>${o.wild ? 'Wildcard ' : ''}${val.toLocaleString()}</b></div>
       <button data-a="closeClue">${o.done ? 'Back to board' : 'No one — back to board'}</button></div>
-    <div class="clue">${esc(cl.clue)}</div>
+    ${imgTag(cl.img, 'clueimg')}<div class="clue">${esc(cl.clue)}</div>
     ${clipControls(cl)}
     ${showHost() ? `<div class="hostbox"><span>Host only</span>${esc(cl.answer)}</div>` : ''}
     <div class="answer">${o.show ? (showHost() ? '<span class="note">Response is showing on the guest screen</span>' : `<span class="shown">${esc(cl.answer)}</span>`)
@@ -602,11 +675,23 @@ const A = {
   editBoard(d) { A.openEditor(boards.find(b => b.id === d.id)); },
   dupBoard(d) { const b = clone(boards.find(x => x.id === d.id)); b.id = uid(); b.name += ' (copy)'; boards.unshift(b); saveBoards(); render(); },
   delBoard(d) { const b = boards.find(x => x.id === d.id); ask(`Delete "${b.name}"?`, () => { boards = boards.filter(x => x !== b); saveBoards(); render(); }, { ok: 'Delete' }); },
-  exportBoard(d) {
-    const text = JSON.stringify(boards.find(x => x.id === d.id));
-    ask('Copy this text and keep it somewhere safe. Paste it into "Import board" on any device to get the board back.', null, { area: text, readonly: true, ok: 'Copy & close' });
-    dlgCb = () => { if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {}); };
+  async exportBoard(d) {
+    const b = await boardForExport(boards.find(x => x.id === d.id));
+    exportText = JSON.stringify(b); exportName = (b.name || 'board').replace(/[^\w-]+/g, '_') + '.json';
+    const big = exportText.length > 400000;
+    ask(big ? 'This board has pictures, so the text is large. "Save as file" is the easiest way to keep it; open the file with "Import board" on any device.'
+      : 'Copy this text and keep it somewhere safe. Paste it into "Import board" on any device to get the board back.', null,
+      { area: big ? exportText.slice(0, 2000) + '…' : exportText, readonly: true, ok: big ? 'Close' : 'Copy & close', extra: '<button data-a="saveFile">Save as file</button>' });
+    dlgCb = big ? null : () => { if (navigator.clipboard) navigator.clipboard.writeText(exportText).catch(() => {}); };
   },
+  saveFile() {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([exportText], { type: 'application/json' }));
+    a.download = exportName; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  },
+  imgUpload() { document.getElementById('imgFile').click(); },
+  imgClear() { mut(() => { const cl = edit.rounds[tab].cats[sel.c].clues[sel.i]; if (cl) delete cl.img; }); },
   importBoard() {
     ask('Paste an exported board below, or choose a saved file.', v => { if (v && v.trim()) importText(v); },
       { area: '', ok: 'Import', extra: '<button data-a="dlgFile">Choose file…</button>' });
@@ -742,6 +827,7 @@ const I = {
   sClue(v) { slotEdit('clue', v); },
   sAnswer(v) { slotEdit('answer', v); },
   sLink(v) { slotEdit('link', v.trim()); },
+  sImg(v) { slotEdit('img', v.trim()); const t = document.querySelector('.clue-card.sel .picrow'); if (t && imgOk(v)) { const old = t.querySelector('img'); if (old) old.remove(); t.insertAdjacentHTML('afterbegin', imgTag(v, 'thumb')); } },
   sq(v) { search.q = v; renderResults(); },
   skey(v) { search.key = v; renderResults(); },
   sdiff(v) { search.diff = v; renderResults(); },
@@ -800,6 +886,14 @@ document.addEventListener('drop', e => {
 });
 document.addEventListener('dragend', () => { drag = null; });
 
+document.getElementById('imgFile').addEventListener('change', async e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file || !edit || !sel) return;
+  try {
+    const ref = await imgPut(await shrinkImage(file));
+    mut(() => { slotEdit('img', ref); });
+  } catch (err) { ask('Could not add that picture: ' + err.message); }
+});
 document.getElementById('importFile').addEventListener('change', async e => {
   const file = e.target.files[0]; e.target.value = '';
   if (file) importText(await file.text());

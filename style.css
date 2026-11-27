@@ -150,6 +150,13 @@ label { color: var(--muted); font-size: 13px; }
 .clipbox iframe { width: 100%; height: 100%; border: 0; display: block; }
 .overlay:has(.clipspace) .clue { flex: 0; font-size: clamp(18px, 2.6vw, 36px); padding: 8px 16px; }
 
+.clueimg { display: block; max-width: min(92vw, 1100px); max-height: 56vh; object-fit: contain; margin: 8px auto 0; border-radius: 12px; background: #fff; box-shadow: 0 10px 40px rgba(0, 0, 0, .45); }
+.overlay:has(.clueimg) .clue { flex: 0; font-size: clamp(18px, 2.8vw, 38px); padding: 10px 16px; }
+.overlay:has(.clueimg) .answer { margin-top: auto; }
+.thumb { display: block; max-width: 100%; max-height: 90px; object-fit: contain; margin-top: 4px; border-radius: 6px; background: #fff; }
+.picrow { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.picrow input { flex: 1 1 100%; }
+
 /* editor */
 .edhead { margin-bottom: 12px; }
 .bname { font-size: 22px; font-weight: 800; }

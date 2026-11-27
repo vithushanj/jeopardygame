@@ -26,6 +26,15 @@ editor. Every category runs easiest at the top to hardest at the bottom. From th
 Boards are saved in the browser (localStorage). **Export** gives copyable text and **Import board**
 restores it on any device.
 
+### Picture clues
+
+Select a clue in the editor and either paste an image address into "Picture" or press **Upload
+picture** to use a file from your computer. Uploads are shrunk to at most 1600 px and kept in this
+browser (IndexedDB), so they don't fill up the space boards are saved in. The picture shows above the
+clue text on the host and guest screens; the clue text can be short ("Name this national park").
+Exports include uploaded pictures, so a board with pictures is easiest to move with **Save as file**.
+Ready-made boards can also use pictures stored in this repo under `images/`.
+
 ## Playing
 
 - **Rounds** – six categories of five clues worth 200–1000. Round 2 is worth double, round 3 triple.
