@@ -404,6 +404,24 @@ window.CURATED = {
       ["Named for the brown robes of an order of friars, this espresso drink is topped with steamed milk foam.", "What is cappuccino?"],
       ["Some 2,200 miles long, this hiking route runs from Georgia to Maine.", "What is the Appalachian Trail?"],
       ["September's birthstone, this gem is the blue form of the mineral that's called ruby when it's red.", "What is sapphire?"],] },
+    { t: "Telugu Movie Songs", k: "Film & TV", c: [
+      ["▶ Play the clip and name the movie this song is from.", "What is RRR?", "https://www.youtube.com/watch?v=4_eEgJhsBMo"],
+      ["▶ Play the clip and name the movie this song is from.", "What is Ala Vaikunthapurramuloo?", "https://www.youtube.com/watch?v=2mDCVzruYzQ"],
+      ["▶ Play the clip and name the movie this song is from.", "What is Geetha Govindam?", "https://www.youtube.com/watch?v=LPeZOE8ZIHI"],
+      ["▶ Play the clip and name the movie this song is from.", "What is Love Story?", "https://www.youtube.com/watch?v=ZNyxae8qhk4"],
+      ["▶ Play the clip and name the movie this song is from.", "What is Arya 2?", "https://www.youtube.com/watch?v=Fs9cB-tN3Lc"],] },
+    { t: "Tamil Movie Lines", k: "Film & TV", c: [
+      ["Rajinikanth: \"Naan oru thadava sonna, nooru thadava sonna maadhiri.\"", "What is Baasha?", "https://www.youtube.com/watch?v=FSeL2R38YQk"],
+      ["Prabhu, on learning the truth about his wife: \"Enna kodumai Saravanan idhu?\"", "What is Chandramukhi?", "https://www.youtube.com/results?search_query=Chandramukhi%20Enna%20kodumai%20Saravanan%20idhu%20Prabhu%20scene"],
+      ["Vijay, as an army officer, to a terrorist: \"I am waiting.\"", "What is Thuppakki?", "https://www.youtube.com/watch?v=pt_VfRYTmvw"],
+      ["Rajinikanth, as a Malaysian gangster just out of prison: \"Kabali da!\"", "What is Kabali?", "https://www.youtube.com/results?search_query=Kabali%20da%20Rajinikanth%20scene"],
+      ["Rajinikanth: \"En vazhi thani vazhi.\"", "What is Padayappa?", "https://www.youtube.com/results?search_query=Padayappa%20En%20vazhi%20thani%20vazhi%20Rajinikanth%20scene"],] },
+    { t: "Bollywood Did It Too", k: "Film & TV", c: [
+      ["Hindi: \"Kabir Singh\" (Shahid Kapoor). An angry, heartbroken surgeon spirals after losing his girlfriend. Name the Telugu original.", "What is Arjun Reddy?"],
+      ["Hindi: \"Shehzada\" (Kartik Aaryan). A man learns he was swapped at birth with a rich family's son. Name the Telugu original.", "What is Ala Vaikunthapurramuloo?"],
+      ["Hindi: \"Rowdy Rathore\" (Akshay Kumar). A small-time thief takes the place of his lookalike, a police officer. Name the Telugu original.", "What is Vikramarkudu?"],
+      ["Hindi: \"Judwaa\" (Salman Khan). Twins separated at birth feel each other's actions. Name the Telugu original, starring Nagarjuna.", "What is Hello Brother?"],
+      ["Hindi: \"Son of Sardaar\" (Ajay Devgn). A man is safe from his enemies only while he stays inside their house as a guest. Name the Telugu original.", "What is Maryada Ramanna?"],] },
   ],
   finals: [
     { t: "World Capitals", k: "Geography", clue: "Other than Washington, D.C., it's the only national capital named for a U.S. president.", answer: "What is Monrovia?" },

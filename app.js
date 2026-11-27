@@ -31,7 +31,7 @@ const SRC = [
 const SRCBY = Object.fromEntries(SRC.map(s => [s.key, s]));
 // every single clue, searchable
 const BANK = [
-  ...CUR.cats.flatMap((c, i) => c.c.map((x, j) => ({ id: `c${i}-${j}`, key: 'c' + i, diff: ROWD[j], clue: x[0], answer: x[1] }))),
+  ...CUR.cats.flatMap((c, i) => c.c.map((x, j) => Object.assign({ id: `c${i}-${j}`, key: 'c' + i, diff: ROWD[j], clue: x[0], answer: x[1] }, x[2] ? { link: x[2] } : {}))),
   ...RAW.clues.map((a, i) => ({ id: 'b' + i, key: 'b' + a[0], diff: a[1], clue: a[2], answer: a[3] })),
 ];
 BANK.forEach(c => { c.hay = (c.clue + ' ' + c.answer + ' ' + SRCBY[c.key].title + ' ' + SRCBY[c.key].topic).toLowerCase(); });
@@ -54,7 +54,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const uid = () => Math.random().toString(36).slice(2, 10);
 const clone = o => JSON.parse(JSON.stringify(o));
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const slim = c => ({ clue: c.clue, answer: c.answer, diff: c.diff, id: c.id });
+const slim = c => Object.assign({ clue: c.clue, answer: c.answer, diff: c.diff, id: c.id }, c.link ? { link: c.link } : {}, c.img ? { img: c.img } : {});
 // YouTube clips embed when the page is served from its own website; inside a claude.ai artifact
 // (or opened as a local file) embeds are blocked, so clips open in a new tab instead.
 const CAN_EMBED = /^https?:$/.test(location.protocol) && !/claude/i.test(location.hostname);
@@ -403,7 +403,8 @@ function vEditor() {
           <button class="small" title="Move right" data-a="catMove" data-c="${ci}" data-d="1" ${ci === rd.cats.length - 1 ? 'disabled' : ''}>→</button>
           <button class="small warn" title="Remove category" data-a="catDel" data-c="${ci}">✕</button></div>
         ${c.clues.map((_, i) => clueCard(c, ci, i, tab)).join('')}</div>`).join('');
-    const add = rd.cats.length < NCAT ? `<div class="bcol addcol"><button data-a="catAdd">＋ Add a category</button><button class="small" data-a="catBlank">＋ Blank category</button></div>` : '';
+    const add = rd.cats.length < NCAT ? `<div class="bcol addcol"><button data-a="catAdd">＋ Add a random category</button>
+      <select data-i="catPick" aria-label="Add a specific category"><option value="">＋ Pick a category…</option>${SRC.filter(s => s.kind === 'cur').map(s => `<option value="${s.key}">${esc(s.title)}</option>`).join('')}</select><button class="small" data-a="catBlank">＋ Blank category</button></div>` : '';
     body = `<div class="row" style="margin-bottom:10px"><button data-a="roundRegen">↻ New categories for this round</button>
         <span class="sub" style="margin:0">Click a clue to edit, swap, move or remove it. Drag one clue onto another to trade places.</span></div>
       <div class="board edit" style="--cols:${rd.cats.length + (add ? 1 : 0) || 1}">${cols}${add}</div>`;
@@ -826,6 +827,7 @@ const I = {
   fAnswer(v) { touch(); edit.final.answer = v; saveEdit(); },
   sClue(v) { slotEdit('clue', v); },
   sAnswer(v) { slotEdit('answer', v); },
+  catPick(v) { if (!v) return; mut(() => { const cat = genCat(SRCBY[v], tab, boardIds(edit)); if (cat) edit.rounds[tab].cats.push(cat); sel = null; }); },
   sLink(v) { slotEdit('link', v.trim()); },
   sImg(v) { slotEdit('img', v.trim()); const t = document.querySelector('.clue-card.sel .picrow'); if (t && imgOk(v)) { const old = t.querySelector('img'); if (old) old.remove(); t.insertAdjacentHTML('afterbegin', imgTag(v, 'thumb')); } },
   sq(v) { search.q = v; renderResults(); },
